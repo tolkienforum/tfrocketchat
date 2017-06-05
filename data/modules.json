@@ -1,0 +1,8 @@
+{
+    "admin": {
+        "settings": {
+            "default_controller": "",
+            "protected": false
+        }
+    }
+}

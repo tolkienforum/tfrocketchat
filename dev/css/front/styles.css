@@ -1,0 +1,10 @@
+.status_away {
+  color: #b58900;
+}
+.status_busy {
+  color: #dc322f;
+}
+.status_online {
+  font-size: 110%;
+  color: #859900;
+}

@@ -1,0 +1,13 @@
+{
+    "tfRocketChatWhosOnline": {
+        "class": "\\IPS\\Widget\\StaticCache",
+        "restrict": [
+            "sidebar",
+            "cms"
+        ],
+        "default_area": "",
+        "allow_reuse": false,
+        "menu_style": "menu",
+        "embeddable": false
+    }
+}

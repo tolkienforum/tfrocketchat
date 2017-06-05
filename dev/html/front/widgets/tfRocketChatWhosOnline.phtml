@@ -1,0 +1,18 @@
+<ips:template parameters="$members=array(), $memberCount=0, $chatVersion='', $orientation='vertical'" />
+<h3 class='ipsType_reset ipsWidget_title' title='{$chatVersion}'>
+	{lang="block_chatWhosOnline"} ({$memberCount})
+</h3>
+<div class='ipsWidget_inner {{if $orientation == 'vertical'}}ipsPad{{else}}ipsPad_half{{endif}}'>
+	{{if $memberCount}}
+		<ul class='ipsList_inline ipsList_noSpacing'>
+			{{foreach $members as $m}}
+				<li class="status">
+					<span class='status_{$m["status"]}' title='{$m["name"]}: {$m["status"]}'>&#9679;</span>
+					{template="userLinkFromData" group="global" app="core" params="$m['forumUserID'], $m['username'], $m['seo_name'], $m['groupID']"}
+				</li>
+			{{endforeach}}
+		</ul>
+	{{else}}
+		<p class='ipsType_reset ipsType_medium ipsType_light'>{lang="block_nobodyOnline"}</p>
+	{{endif}}
+</div>
