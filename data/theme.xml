@@ -7,7 +7,7 @@
 	{{if $memberCount}}
 		<ul class='ipsList_inline ipsList_noSpacing'>
 			{{foreach $members as $m}}
-				<li>
+				<li class="status">
 					<span class='status_{$m["status"]}' title='{$m["name"]}: {$m["status"]}'>&#9679;</span>
 					{template="userLinkFromData" group="global" app="core" params="$m['forumUserID'], $m['username'], $m['seo_name'], $m['groupID']"}
 				</li>
@@ -21,9 +21,11 @@
  <css css_location="front" css_app="tfrocketchat" css_attributes="" css_path="." css_name="styles.css">.status_away {
   color: #b58900;
 }
-
+.status_busy {
+  color: #dc322f;
+}
 .status_online {
-  font-weight: bold;
+  font-size: 110%;
   color: #859900;
 }
 </css>
