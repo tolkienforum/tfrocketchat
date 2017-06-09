@@ -85,13 +85,20 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
  		return $values;
  	}
 
-	public function readJsonFromUrl($url, $opts)
-	{
+	public function readJsonFromUrl($url, $opts, $defaultReturn=array()) {
 		$context = stream_context_create($opts);
-		$response = file_get_contents($url, false, $context);
-		$arr = json_decode($response, true);
+		try {
+			$response = file_get_contents($url, false, $context);
+			if($response === false)	{
+				throw new Exception('Could not read from (null): ' . $url);
+			}
+			$arr = json_decode($response, true);
+			return $arr;
 
-		return $arr;
+		} catch(\Exception $ex) {
+			\IPS\Log::log('Could not read from: ' . $url , 'tfrocketchat');
+			return $defaultReturn;
+		}
 	}
 
 	public function render()
@@ -156,7 +163,10 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 				'timeout' => 5
 			)
 		);
-		$rcUsers = $this->readJsonFromUrl($url . "/api/v1/users.list", $usersOpts);
+		$emptyUsers = array(
+			'users' => array()
+		);
+		$rcUsers = $this->readJsonFromUrl($url . "/api/v1/users.list", $usersOpts, $emptyUsers);
 
 		$members = array();
 		$validStatus = array("online", "away", "busy");
