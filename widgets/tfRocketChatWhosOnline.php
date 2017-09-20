@@ -21,7 +21,7 @@ if ( !defined( '\IPS\SUITE_UNIQUE_KEY' ) )
 /**
  * tfRocketChatWhosOnline Widget
  */
-class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
+class _tfRocketChatWhosOnline extends \IPS\Widget
 {
 	/**
 	 * @brief	Widget Key
@@ -67,23 +67,13 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 	 		$form = new \IPS\Helpers\Form;
  		}
 
-		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_url'));
-		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_username'));
-		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_password'));
+		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_url', isset( $this->configuration['tfrocketchat_url'] ) ? $this->configuration['tfrocketchat_url'] : ''));
+		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_username', isset( $this->configuration['tfrocketchat_username'] ) ? $this->configuration['tfrocketchat_username'] : ''));
+		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_password', isset( $this->configuration['tfrocketchat_password'] ) ? $this->configuration['tfrocketchat_password'] : ''));
+        $form->add(new \IPS\Helpers\Form\Text('tfrocketchat_topic_channel', isset( $this->configuration['tfrocketchat_topic_channel'] ) ? $this->configuration['tfrocketchat_topic_channel'] : ''));
 
  		return $form;
  	} 
- 	
- 	 /**
- 	 * Ran before saving widget configuration
- 	 *
- 	 * @param	array	$values	Values from form
- 	 * @return	array
- 	 */
- 	public function preConfig( $values )
- 	{
- 		return $values;
- 	}
 
 	public function readJsonFromUrl($url, $opts, $defaultReturn=array()) {
 		$context = stream_context_create($opts);
@@ -97,13 +87,15 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 
 		} catch(\Exception $ex) {
 			\IPS\Log::log('Could not read from: ' . $url , 'tfrocketchat');
+			\IPS\Log::log('Exception while calling file_get_contents: ' . $ex->getMessage() , 'tfrocketchat');
+//			\IPS\Log::log('Trace: ' . $ex->getTraceAsString() , 'tfrocketchat');
 			return $defaultReturn;
 		}
 	}
 
 	public function render()
 	{
-				/* Do we have permission? */
+		/* Do we have permission? */
 		if ( !\IPS\Member::loggedIn()->canAccessModule( \IPS\Application\Module::get( 'core', 'online' ) ) )
 		{
 			return "";
@@ -119,6 +111,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 		$url = $this->configuration['tfrocketchat_url'];
 		$username = $this->configuration['tfrocketchat_username'];
 		$password = $this->configuration['tfrocketchat_password'];
+		$channelName = $this->configuration['tfrocketchat_topic_channel'];
 
 		// read info and version from chat.server:
 		$infoOpts = array(
@@ -133,16 +126,21 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 		$chatVersion = $rcInfo['info']['version'];
 
 		// login to rocket chat:
-		$postUsernamePassword = http_build_query(
+		$postUsernamePassword = json_encode(
 			array(
 				'username' => $username,
 				'password' => $password
 			)
 		);
+
+		// \IPS\Log::log('Login String: ' . $postUsernamePassword , 'tfrocketchat');
+
 		$loginOpts = array(
 			'http'=>array(
 				'method' => "POST",
-				'header' => "Accept: application/json",
+				'header' => "Content-Type: application/json\r\n".
+							"Accept: application/json",
+				'ignore_errors' => true,
 				'timeout' => 3,
 				'content' => $postUsernamePassword
 			)
@@ -189,10 +187,33 @@ class _tfRocketChatWhosOnline extends \IPS\Widget\StaticCache
 			}
 		}
 
+		$channel = array();
+		if(isset($channelName)) {
+            $channelOpts = array(
+                'http'=>array(
+                    'method' => "GET",
+                    'header' => "Accept: application/json\r\n" .
+                        "X-Auth-Token: $authToken\r\n" .
+                        "X-User-Id: $userId\r\n",
+                    'timeout' => 5
+                )
+            );
+
+            $emptyChannelInfo = array(
+                'channel' => array()
+            );
+
+            // https://chat.tolkienforum.de/api/v1/channels.info?roomName=general
+            $channelInfo = $this->readJsonFromUrl($url . "/api/v1/channels.info?roomName=" . $channelName, $channelOpts, $emptyChannelInfo);
+
+            $channel = $channelInfo['channel'];
+            // \IPS\Log::log('Channel String: ' . print_r($channel, true) , 'tfrocketchat');
+
+        }
+
 		$orientation = $this->orientation;
 		$memberCount = count($members);
 
-
-		return $this->output($members, $memberCount, $chatVersion, $orientation);
+		return $this->output($members, $memberCount, $chatVersion, $channel, $orientation);
 	}
 }

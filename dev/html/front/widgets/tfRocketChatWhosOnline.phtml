@@ -1,8 +1,11 @@
-<ips:template parameters="$members=array(), $memberCount=0, $chatVersion='', $orientation='vertical'" />
+<ips:template parameters="$members=array(), $memberCount=0, $chatVersion='', $channel=array(), $orientation='vertical'" />
 <h3 class='ipsType_reset ipsWidget_title' title='{$chatVersion}'>
-	{lang="block_chatWhosOnline"} ({$memberCount})
+	{lang="block_tfRocketChatWhosOnline"} ({$memberCount})
 </h3>
 <div class='ipsWidget_inner {{if $orientation == 'vertical'}}ipsPad{{else}}ipsPad_half{{endif}}'>
+    {{if count($channel)}}
+        <div class="channelTopic" title="{$channel['description']}">{$channel['topic']}</div>
+    {{endif}}
 	{{if $memberCount}}
 		<ul class='ipsList_inline ipsList_noSpacing'>
 			{{foreach $members as $m}}
