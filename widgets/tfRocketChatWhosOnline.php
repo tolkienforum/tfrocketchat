@@ -122,7 +122,13 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			)
 		);
 
-		$rcInfo = $this->readJsonFromUrl($url . "/api/v1/info", $infoOpts);
+		$defaultRcInfo = array(
+		    'info' => array(
+		        'version' => "-1"
+            )
+        );
+
+		$rcInfo = $this->readJsonFromUrl($url . "/api/v1/info", $infoOpts, $defaultRcInfo);
 		$chatVersion = $rcInfo['info']['version'];
 
 		// login to rocket chat:
