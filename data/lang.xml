@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <language>
- <app key="tfrocketchat" version="10201">
+ <app key="tfrocketchat" version="10203">
   <word key="__app_tfrocketchat" js="0">Rocket.Chat</word>
   <word key="block_tfRocketChatWhosOnline" js="0">Rocket.Chat users online</word>
   <word key="block_tfRocketChatWhosOnline_desc" js="0">Online members on a Rocket.Chat server.</word>

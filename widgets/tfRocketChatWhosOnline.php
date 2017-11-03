@@ -80,7 +80,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		try {
 			$response = file_get_contents($url, false, $context);
 			if($response === false)	{
-				throw new Exception('Could not read from (null): ' . $url);
+				throw new \Exception('Could not read from (null): ' . $url);
 			}
 			$arr = json_decode($response, true);
 			return $arr;
@@ -89,6 +89,8 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			\IPS\Log::log('Could not read from: ' . $url , 'tfrocketchat');
 			\IPS\Log::log('Exception while calling file_get_contents: ' . $ex->getMessage() , 'tfrocketchat');
 //			\IPS\Log::log('Trace: ' . $ex->getTraceAsString() , 'tfrocketchat');
+//			\IPS\Log::log('Returning defaults: ' . print_r($defaultReturn, true));
+
 			return $defaultReturn;
 		}
 	}
@@ -122,13 +124,13 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			)
 		);
 
-		$defaultRcInfo = array(
+		$emptyRcInfo = array(
 		    'info' => array(
 		        'version' => "-1"
             )
         );
 
-		$rcInfo = $this->readJsonFromUrl($url . "/api/v1/info", $infoOpts, $defaultRcInfo);
+		$rcInfo = $this->readJsonFromUrl($url . "/api/v1/info", $infoOpts, $emptyRcInfo);
 		$chatVersion = $rcInfo['info']['version'];
 
 		// login to rocket chat:
@@ -142,7 +144,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		// \IPS\Log::log('Login String: ' . $postUsernamePassword , 'tfrocketchat');
 
 		$loginOpts = array(
-			'http'=>array(
+			'http' => array(
 				'method' => "POST",
 				'header' => "Content-Type: application/json\r\n".
 							"Accept: application/json",
@@ -152,7 +154,14 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			)
 		);
 
-		$rcLogin = $this->readJsonFromUrl($url . "/api/v1/login", $loginOpts);
+		$emptyLoginOpts = array(
+		    'data' => array(
+		        'authToken' => '',
+                'userId' => ''
+            )
+        );
+
+		$rcLogin = $this->readJsonFromUrl($url . "/api/v1/login", $loginOpts, $emptyLoginOpts);
 		$authToken = $rcLogin['data']['authToken'];
 		$userId = $rcLogin['data']['userId'];
 
