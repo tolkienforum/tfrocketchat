@@ -28,8 +28,8 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 	 */
 	public $key = 'tfRocketChatWhosOnline';
 
-	private $cacheKey = '';
-	private $cacheExpiration = 60;
+	protected $cacheKey = '';
+	protected $cacheExpiration = 60;
 	
 	/**
 	 * @brief	App
@@ -141,13 +141,6 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 				$widget = array( 'built' => time(), 'html' => $content );
 
 				\IPS\Data\Store::i()->$cacheKey = $widget;
-				\IPS\Log::log('new cache: ' . $widget['html'], 'tfrocketchat');
-				\IPS\Log::log('existing cache built: ' . $widget['built'], 'tfrocketchat');
-			}
-			else
-			{
-					\IPS\Log::log('existing cache: ' . $widget['html'], 'tfrocketchat');
-					\IPS\Log::log('existing cache built: ' . $widget['built'], 'tfrocketchat');
 			}
 
 			return $widget['html'];
@@ -160,7 +153,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		}
 	}
 
-	private function createHtml()
+	protected function createHtml()
 	{
 		$url = $this->configuration['tfrocketchat_url'];
 		$username = $this->configuration['tfrocketchat_username'];
