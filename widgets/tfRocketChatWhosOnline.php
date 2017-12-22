@@ -136,7 +136,10 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			{
 				\IPS\Log::log('refreshing rocket.chat online users, cacheKey: ' . $cacheKey, 'tfrocketchat');
 
-				$widget = array( 'built' => time(), 'html' => $this->createHtml() );
+                $content = $this->createHtml();
+                \IPS\Member::loggedIn()->language()->parseOutputForDisplay( $content );
+				$widget = array( 'built' => time(), 'html' => $content );
+
 				\IPS\Data\Store::i()->$cacheKey = $widget;
 				\IPS\Log::log('new cache: ' . $widget['html'], 'tfrocketchat');
 				\IPS\Log::log('existing cache built: ' . $widget['built'], 'tfrocketchat');
