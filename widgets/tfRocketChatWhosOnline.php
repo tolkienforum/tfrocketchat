@@ -27,31 +27,40 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 	 * @brief	Widget Key
 	 */
 	public $key = 'tfRocketChatWhosOnline';
+
+	private $cacheKey = '';
+	private $cacheExpiration = 60;
 	
 	/**
 	 * @brief	App
 	 */
 	public $app = 'tfrocketchat';
-		
-	/**
-	 * @brief	Plugin
-	 */
-	public $plugin = '';
 
 	/**
-	 * @brief	Prevent caching for this block (caching uses a default expiration of at least a day? cant set a lower value??)
+	 * Constructor
+	 *
+	 * @param	String				$uniqueKey				Unique key for this specific instance
+	 * @param	array				$configuration			Widget custom configuration
+	 * @param	null|string|array	$access					Array/JSON string of executable apps (core=sidebar only, content=IP.Content only, etc)
+	 * @param	null|string			$orientation			Orientation (top, bottom, right, left)
+	 * @return	void
 	 */
-	public $neverCache = TRUE;
+	public function __construct( $uniqueKey, array $configuration, $access=null, $orientation=null )
+	{
+		parent::__construct( $uniqueKey, $configuration, $access, $orientation );
 
+		$this->neverCache = TRUE;
+		$this->cacheKey = "widget_{$this->key}_" . $this->uniqueKey . '_' . md5( json_encode( $configuration ) . "_" . \IPS\Member::loggedIn()->language()->id );
+	}
 
 	public function init()
 	{
+		parent::init();
+
 		// include css for widgets:
 		\IPS\Output::i()->cssFiles = array_merge( \IPS\Output::i()->cssFiles, \IPS\Theme::i()->css('styles.css', $this->app, 'front'));
 
 		$this->template( array( \IPS\Theme::i()->getTemplate( 'widgets', $this->app, 'front' ), $this->key ) );
-		
-		parent::init();
 	}
 	
 	/**
@@ -110,6 +119,46 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			return \IPS\Member::loggedIn()->language()->addToStack("tfrocketchat_no_settings");
 		}
 
+		/* Does this go in the store? Things like active users don't get stored, and if in developer or designer mode, nothing does */
+		if ( isset( $this->cacheKey ) AND !\IPS\IN_DEV AND !\IPS\Theme::designersModeEnabled() )
+		{
+			$cacheKey = $this->cacheKey;
+			$expiration = $this->cacheExpiration;
+			// initialize with empty cache structure if non-existing
+			if ( !isset( \IPS\Data\Store::i()->$cacheKey ) )
+			{
+				\IPS\Data\Store::i()->$cacheKey = array( 'built' => 0, 'html' => '' );
+			}
+
+			// check if cache content needs to be refreshed
+			$widget = \IPS\Data\Store::i()->$cacheKey;
+			if( (int)$widget['built'] + $expiration < time() )
+			{
+				\IPS\Log::log('refreshing rocket.chat online users, cacheKey: ' . $cacheKey, 'tfrocketchat');
+
+				$widget = array( 'built' => time(), 'html' => $this->createHtml() );
+				\IPS\Data\Store::i()->$cacheKey = $widget;
+				\IPS\Log::log('new cache: ' . $widget['html'], 'tfrocketchat');
+				\IPS\Log::log('existing cache built: ' . $widget['built'], 'tfrocketchat');
+			}
+			else
+			{
+					\IPS\Log::log('existing cache: ' . $widget['html'], 'tfrocketchat');
+					\IPS\Log::log('existing cache built: ' . $widget['built'], 'tfrocketchat');
+			}
+
+			return $widget['html'];
+
+		}
+		else
+		{
+			\IPS\Log::log('not using cache (IN_DEV or designersMode).', 'tfrocketchat');
+			return $this->createHtml();
+		}
+	}
+
+	private function createHtml()
+	{
 		$url = $this->configuration['tfrocketchat_url'];
 		$username = $this->configuration['tfrocketchat_username'];
 		$password = $this->configuration['tfrocketchat_password'];
