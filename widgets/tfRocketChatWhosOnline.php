@@ -269,7 +269,29 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
             $channel = $channelInfo['channel'];
             // \IPS\Log::log('Channel String: ' . print_r($channel, true) , 'tfrocketchat');
 
-        }
+		}
+		
+		// logout
+		$logoutOpts = array(
+			'http' => array(
+				'method' => "GET",
+				'header' => "Accept: application/json\r\n" .
+					"X-Auth-Token: $authToken\r\n" .
+					"X-User-Id: $userId\r\n",
+				'ignore_errors' => true,
+				'timeout' => 3
+			)
+		);
+
+		$emptyLogoutOpts = array(
+			'status' => "unknown",
+		    'data' => array(
+		        'message' => ''
+            )
+        );
+
+		$rcLogout = $this->readJsonFromUrl($url . "/api/v1/logout", $logoutOpts, $emptyLogoutOpts);
+		\IPS\Log::log('Logout status: ' . $rcLogout['status'] , 'tfrocketchat');
 
 		$orientation = $this->orientation;
 		$memberCount = count($members);
