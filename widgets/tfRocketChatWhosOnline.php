@@ -274,7 +274,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		// logout
 		$logoutOpts = array(
 			'http' => array(
-				'method' => "GET",
+				'method' => "POST",
 				'header' => "Accept: application/json\r\n" .
 					"X-Auth-Token: $authToken\r\n" .
 					"X-User-Id: $userId\r\n",
