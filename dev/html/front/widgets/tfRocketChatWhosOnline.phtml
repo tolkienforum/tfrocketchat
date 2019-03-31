@@ -3,15 +3,20 @@
 	{lang="block_tfRocketChatWhosOnline"} ({$memberCount})
 </h3>
 <div class='ipsWidget_inner {{if $orientation == "vertical"}}ipsPad{{else}}ipsPad_half{{endif}}'>
-    {{if count($channel)}}
+	{{if !empty($channel)}}
+		<!--
         <div class="channelTopic" title="{$channel['description']}">{$channel['topic']}</div>
+		-->
+        {{if !empty($channel['announcement'])}}
+            <div class="channelTopic">{$channel['announcement']}</div>
+        {{endif}}
     {{endif}}
 	{{if $memberCount}}
 		<ul class='ipsList_inline ipsList_noSpacing'>
 			{{foreach $members as $m}}
 				<li class="status">
 					<span class='status_{$m["status"]}' title='{$m["name"]}: {$m["status"]}'>&#9679;</span>
-					{template="userLinkFromData" group="global" app="core" params="$m['forumUserID'], $m['username'], $m['seo_name'], $m['groupID']"}
+					{template="userLinkFromData" group="global" app="core" params="$m['forumUserID'], $m['username'], $m['seo_name'], $m['groupID'], TRUE"}
 				</li>
 			{{endforeach}}
 		</ul>

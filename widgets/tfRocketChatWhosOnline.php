@@ -230,7 +230,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		$validStatus = array("online", "away", "busy");
 		foreach ($rcUsers['users'] as $user) {
 			// only add online users, filter out bots:
-			if(in_array($user['status'], $validStatus) && $user['type'] == "user")
+			if(\in_array($user['status'], $validStatus) && $user['type'] == "user")
 			{
 				$member = \IPS\Member::load( $user['username'], 'name' );
 
@@ -294,7 +294,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		\IPS\Log::log('Logout status: ' . $rcLogout['status'] , 'tfrocketchat');
 
 		$orientation = $this->orientation;
-		$memberCount = count($members);
+		$memberCount = \count($members);
 
 		return $this->output($members, $memberCount, $chatVersion, $channel, $orientation);
 	}
