@@ -174,6 +174,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
             )
         );
 
+		// use new 1.0.0 info api:
 		$rcInfo = $this->readJsonFromUrl($url . "/api/info", $infoOpts, $emptyRcInfo);
 		$chatVersion = $rcInfo['version'];
 
