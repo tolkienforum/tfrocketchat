@@ -5,9 +5,6 @@
 </h3>
 <div class='ipsWidget_inner {{if $orientation == "vertical"}}ipsPad{{else}}ipsPad_half{{endif}}'>
 	{{if !empty($channel)}}
-		<!--
-        <div class="channelTopic" title="{$channel['description']}">{$channel['topic']}</div>
-		-->
         {{if !empty($channel['announcement'])}}
             <div class="channelTopic">{$channel['announcement']}</div>
         {{endif}}
