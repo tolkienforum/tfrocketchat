@@ -134,8 +134,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 			$widget = \IPS\Data\Store::i()->$cacheKey;
 			if( (int)$widget['built'] + $expiration < time() )
 			{
-				\IPS\Log::log('refreshing rocket.chat online users, cacheKey: ' . $cacheKey, 'tfrocketchat');
-
+				// \IPS\Log::log('refreshing rocket.chat online users, cacheKey: ' . $cacheKey, 'tfrocketchat');
                 $content = $this->createHtml();
                 \IPS\Member::loggedIn()->language()->parseOutputForDisplay( $content );
 				$widget = array( 'built' => time(), 'html' => $content );
@@ -175,8 +174,8 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
             )
         );
 
-		$rcInfo = $this->readJsonFromUrl($url . "/api/v1/info", $infoOpts, $emptyRcInfo);
-		$chatVersion = $rcInfo['info']['version'];
+		$rcInfo = $this->readJsonFromUrl($url . "/api/info", $infoOpts, $emptyRcInfo);
+		$chatVersion = $rcInfo['version'];
 
 		// login to rocket chat:
 		$postUsernamePassword = json_encode(
@@ -291,7 +290,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
         );
 
 		$rcLogout = $this->readJsonFromUrl($url . "/api/v1/logout", $logoutOpts, $emptyLogoutOpts);
-		\IPS\Log::log('Logout status: ' . $rcLogout['status'] , 'tfrocketchat');
+		// \IPS\Log::log('Logout status: ' . $rcLogout['status'] , 'tfrocketchat');
 
 		$orientation = $this->orientation;
 		$memberCount = \count($members);
