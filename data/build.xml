@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<build>
+ <module key="admin/settings"><![CDATA[{"default_controller":"","protected":false}]]></module>
+ <widget key="tfRocketChatWhosOnline"><![CDATA[{"class":"\\IPS\\Widget","restrict":["sidebar"],"default_area":"","allow_reuse":false,"menu_style":"menu","embeddable":false}]]></widget>
+</build>
