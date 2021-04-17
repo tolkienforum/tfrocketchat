@@ -80,6 +80,7 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_username', isset( $this->configuration['tfrocketchat_username'] ) ? $this->configuration['tfrocketchat_username'] : ''));
 		$form->add(new \IPS\Helpers\Form\Text('tfrocketchat_password', isset( $this->configuration['tfrocketchat_password'] ) ? $this->configuration['tfrocketchat_password'] : ''));
         $form->add(new \IPS\Helpers\Form\Text('tfrocketchat_topic_channel', isset( $this->configuration['tfrocketchat_topic_channel'] ) ? $this->configuration['tfrocketchat_topic_channel'] : ''));
+        $form->add(new \IPS\Helpers\Form\Text('tfrocketchat_filter_usernames', isset( $this->configuration['tfrocketchat_filter_usernames'] ) ? $this->configuration['tfrocketchat_filter_usernames'] : ''));
 
  		return $form;
  	} 
@@ -158,6 +159,13 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		$username = $this->configuration['tfrocketchat_username'];
 		$password = $this->configuration['tfrocketchat_password'];
 		$channelName = $this->configuration['tfrocketchat_topic_channel'];
+		$hideUsernames = array();
+
+		if(array_key_exists('tfrocketchat_filter_usernames', $this->configuration))
+		{
+			$hideUsernamesString = $this->configuration['tfrocketchat_filter_usernames'];
+			$hideUsernames = explode(",", $hideUsernamesString);
+		}
 
 		// read info and version from chat.server:
 		$infoOpts = array(
@@ -229,8 +237,8 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
 		$members = array();
 		$validStatus = array("online", "away", "busy");
 		foreach ($rcUsers['users'] as $user) {
-			// only add online users, filter out bots:
-			if(\in_array($user['status'], $validStatus) && $user['type'] == "user")
+			// only add online users and not hidden by configuration:
+			if(\in_array($user['status'], $validStatus) && !\in_array($user['username'], $hideUsernames))
 			{
 				$member = \IPS\Member::load( $user['username'], 'name' );
 

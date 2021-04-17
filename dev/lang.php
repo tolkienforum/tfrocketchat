@@ -10,5 +10,6 @@ $lang = array(
     'tfrocketchat_url' => "Rocket.Chat Server (no / at end)",
     'tfrocketchat_username' => "Username for the REST API.",
     'tfrocketchat_password' => "Password for the REST API user.",
-    'tfrocketchat_topic_channel' => "Channel to use to read the topic."
+    'tfrocketchat_topic_channel' => "Channel to use to read the topic.",
+    'tfrocketchat_filter_usernames' => "Comma (,) separated list of usernames to hide."
 );
