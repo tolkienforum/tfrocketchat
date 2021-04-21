@@ -215,6 +215,11 @@ class _tfRocketChatWhosOnline extends \IPS\Widget
         );
 
 		$rcLogin = $this->readJsonFromUrl($url . "/api/v1/login", $loginOpts, $emptyLoginOpts);
+		if(!array_key_exists("data", $rcLogin))
+		{
+			return "Error: Authentication with Rocket.Chat failed!";
+		}
+
 		$authToken = $rcLogin['data']['authToken'];
 		$userId = $rcLogin['data']['userId'];
 
